@@ -1,0 +1,1374 @@
+---
+title: "Cleaning"
+author: "Djebari"
+date: '2022-06-27'
+output: html_document
+---
+#you need to get the data first
+#loading the library
+```{r}
+library(tidyverse)
+```
+
+#the fist step is to make all character as lower case
+```{r}
+data <- data %>% 
+  mutate(food_name2 = str_to_lower(food_name)) 
+```
+
+#the second step is to delete irrelevent items (which are note food such as "robe de soirée" ) by creating the vector A that contains them
+```{r}
+data <- data %>% 
+  filter(!str_detect(food_name2,paste(A,collapse = "|")))
+```
+
+#we also delete the items that forms a menu and note a single food
+```{r}
+menu <- c("2burgers+2mini tacos+4frites+4boissons", "barquette + boisson",
+          "barquette de frites + canette",
+          "box frites + tacos + coca cola + big donuts + dessert mak flurry",
+          "broasted meals 3pcs chicken + 3 strips","burger + canette",
+          "burger+mini tacos","burger+mini tacos+2frites+2boissons",
+          "chapati thon + Jus en boite","cheese burger + boisson","cheese burger + boite de jus",
+          "chicken burger + boisson gratuite","chicken tikka masala + frite + canette offerte",
+          "chilly crispy Chicken + frite + canette offerte","chorba frik + bourek",
+          "chourba + bourek","crispy+frites+jus+jouet","cuisses 2 pcs + frites",
+          "family drums + tenders + wings", "frite+boissons",
+          "healthy drums + tenders + wings + salade + eau","kandi kebab + frite + canette offerte",
+          "le grec foie +frite + canette offerte","marguerite+burger", "marguerite+burger+frites+boisson",
+          "marguerite+burger+mini tacos+2frites+2boissons","menu (barquette+boisson)",
+          "menu (barquette+soda)", "menu (frite+boisson)", "mini burger + jus + surprise",
+          "mini tacos + jus + surprise","mini tacos+burger+frites+boisson","nuggets 5 pcs + frites",
+          "pack drums + tenders","pizza + coca cola","pizza+burger","pizza+burger+frites+boisson",
+          "pizza+burger+mini tacos+2frites+2boissons","plat nuggets + frites + riz",
+          "plat royal donuts + gaufre", "pizza+burger+mini tacos+2frites+2boissons",
+          "plat nuggets + frites + riz", "plat royal donuts + gaufre", "plat tenders + frites + riz",
+          "sandwich + boisson","tacos + boisson","tacos + coca cola","tacos + jus + surprise",
+          "tenders 5 pcs + frites", "the chic'n burger avec frites + canette","turkish adana kebab frite + canette offerte",
+          "turkish adana kebab frite + canette offerte","حبة كوردن بلو + فريت",
+          "حبة معجوقة + فريت", "دجاجة كاملة + سلطة + فريت",
+          "طرف دجاج + فريت", "نصف دجاجة + سلطة + فريت")
+
+data <- data %>%
+  filter(!str_detect(food_name, paste(d, collapse = "|")))
+  
+  
+data <- data %>%
+  filter(!str_detect(food_name2,"\\menu" )) %>% 
+  count(food_name2) %>% 
+  pull(food_name2)
+```
+
+#Then we put the items that have different names but the same meaning into one vector
+```{r}
+bubble_waffle_banane <- c("bubble waffle banane","bubble waffle bannane")
+
+burger_dz <- c("burger algerien", "burger algérien", "algérien burger")
+
+burger_poulet <- c("burger chicken","burger chiken", "cheese burger poulet", 
+                   "cheese poulet", "cheese poulet haché", "cheeseburger poulet", 
+                   "chicken burger", "chicken burger classique", "chicken cheese burger",
+                   "chicken cheese", "chickenburger", "chiken burger", "chiken cheese", 
+                   "hamburger chicken", "hamburger di pollo", "hamburger poulet", "happy chicken burger")
+
+burger_mexicain <- c("burger mexciano", "burger mexicain")
+
+burger_mix <- c("burger mix", "burger mixte")
+
+burger_portobello <- c("burger porto bello", "burger portobello")
+
+burger_poulet_mariné <- c("burger poulet mariné", "burger poulet marinée")
+
+burger <- c("burger simple", "cheese burger", "cheese burger classique", 
+            "cheese burger simple", "cheese simple", "cheeseburger", 
+            "cheeseburger classique", "cheeseburger simple","délice burger",
+            "cheese burger viande", "cheese viande", "cheese viande hachée",
+            "hamburger", "hamburger big mac", "hamburger di carne",
+            "hamburger normal", "hamburger simple", "hamburger viande",
+            "hamburger viande hachée", "hum burger", "classic burger", 
+            "classique burger","Construisez votre burger r+1", 
+            "hamburger spécial (+ fromage )")
+
+burger_100g <- c("cheese burger 100g", "cheese burger 100 g")
+
+calzone_mix <- c("calzone mixte", "calzone mix")
+
+campionne <- c("campionne", "campione")
+
+canadienne <- c("cannadien", "cannadienne")
+
+chakhchokha <- c("chakhchoukha","chakhchokha")
+
+chawarma <- c("chawarma", "chawarma +", "chawarmas", "chawerma",
+              "sandwich chawarma", "sandwich chawarma ساندويتش شاورما",
+              "sandwich chawarma de poulet", "sandwich chawarma normal",
+              "sandwich chawarma p-pain", "sandwich chawarma pain spécial",
+              "sandwich chawarma poulet","sandwich chawarma de poulet", 
+              "sandwich chawarma syrien", "sandwich chawerma", "sandwich chawarma grec",
+              "sandwich chawarma libanais", "sandwich chawarma libanaise",
+              "sandwich chawarma matlo3")
+
+chawata_dz <- c("chawata algérien", "chawata algérien +")
+
+cheesecake_raffaello <- c("cheese cake rafaello","cheese cake raffaello")
+
+cheesecake <- c("cheesecake","cheese cake", "chesscack")
+
+chiche_kebab <- c("chiche kabab", "chiche kebab","chich kebab", "sandwich chich-kebab", 
+                  "sandwich chich kebab", "sandwich chiche kebab")
+
+chicken_tika <- c("chicken tika", "chicken tikka")
+
+bourek_3_fromagues <- c("bourek 03 fromages", "bourek aux 3 fromages")
+
+bourek_crevettes <- c("bourek aux crevettes", "bourek crevettes", "bourek crouvette")
+
+bourek_fruits_de_mer <- c("bourek aux fruits de mer", "bourek fruits de mer")
+
+frites <- c("assiette de frite صحن فريت", "assiette de frites","assiette frites",
+            "barquette de frite", "barquette de frites","barquette de frites (surgelées)",
+            "barquette de frites gm","barquette de frites grande","barquette de frites l",
+            "barquette de frites large", "barquette de frites m",
+            "barquette de frites maison", "barquette de frites pm","barquette de frites simple",
+            "barquette de frites small", "barquette de frites xl", 
+            "fresh fries", "frites", "fries", "frite simple", "frite", 
+            "frites classiques", "frites classique", "frites gm", "frites pm", 
+            "frites simple", "frites simples", "moyenne frite", "plat de frites", 
+            "plat frites", "plat frites gm", "plat frites pm", "frites takeoff")
+
+frites_fromagère <- c("barquette de frites + sauce fromagère maison","barquette de frites à la sauce fromagère",
+                      "barquette de frites cheesy", "barquette de frites fomagère",
+                      "barquette de frites fromage", "barquette de frites gratinées",
+                      "barquette de frites sauce fromagère","barquette de frites+ gruyère",
+                      "frite sauce fromagère", "frite sauce fromage", "frites cheese",
+                      "frites cheesy","frites fromagères", "frites fromagère", 
+                      "frites sauce fromagère", "frites au fromage","frites cheddar",
+                      "frites 03 fromages", "frites cheddar fondu", "frites gratinée",
+                      "barquette de frites + sauce fromagère maison")
+
+brik_tunisienne <- c("brick tunisienne", "brick tunisien", "brik tunisien", "brik")
+
+brochette_de_viande <- c("brochette viande", "brochettes de viande")
+
+brochette_escalope <- c("brochette escalope", "brochettes escalope")
+
+brownie <- c("browni","brownie", "brownies", "brownies simple")
+
+bubble_caramel <- c("bubble caramel", "bubble caramella")
+
+bubble_fruits <- c("bubble fruita", "bubble fruits", "bubble au fruits")
+
+blue_burger <- c("bleu burger", "blue simple", "blue burger","blue burger simple")
+
+blue_burger_triple <- c("blue burger triple", "blue triple")
+
+petite_boisson <-  c("boison 33 cl","boisson 0.35 l", "boisson 24 cl", "boisson 33 cl",
+                     "boisson 33cl","boisson canette","boisson gasousze","boisson gazeuse", 
+                     "boisson gazeuse 0.5l","boisson gazeuse 33 cl","boisson gazeuse 33cl",
+                     "boissons gazeuse 0,33 cl", "boisson gazeuse petit format")
+
+grande_boisson <- c("boisson 1 l","boisson 1l", "boisson gazeuse 1 l","boisson gazeuse 1 l"
+                    ,"boisson gazeuse 1l", "boissons gazeuse 1 l", "boissons gazeuse 1l")
+
+boisson_gazeuse_gm <- c("boisson gazeuse g.m",
+                        "boisson gazeuse gm", "boissons gazeuse gm")
+
+bourek_viande <- c("bourak viande hachée", "bourek à la viande hachée")
+
+jus_de_fruits <- c("cocktail de fruits", "cocktail de fruits de saison", "cocktail de jus pressé",
+                   "cocktail jus de fruits", "cocktail maison",  "cocktails de fruits")
+
+complet_poulet <- c("complet escalope", "complet escalope avec garniture", "complet escalope de poulet")
+
+crepe_nutella <- c("crêpe  nuella", "crêpe  nutella", "crêpe au nutella", "crépe nutella", "crêpe nutella", 
+                   "crépe nutella", "crêpe nutelle", "crêpe nutella simple",
+                   "crêpe simple nutella")
+
+crepe_fruits <- c("crêpe au fruit", "crêpe au fruits", "crêpe aux  fruits", "crêpe aux fruits",
+                  "crêpe avec 1 fruits","crêpe avec un fruit")
+
+crepe_banane <- c("crêpe banana", "crêpe banane", "crêpe bananes")
+
+
+crepe_banane_nutella <- c("crêpe banane nutella", "crêpe banatella", "crêpe nutella  banane",
+                          "crépe nutella banane", "crêpe nutella & banane")
+
+
+croque_monsieur <- c("croque  monsieur", "croque monsieur", "croque mr")
+
+Cuisse_de_poulet_marinée <- c("cuisse de poulet mariné","cuisse de poulet marinée", 
+                              "cuisse de poulet marinée à la libanaise")
+
+donuts_fruits <- c("donuts aux fruits", "donuts fruits")
+
+double_burger <- c("double cheese","double cheese burger", "double cheeseburger",
+                   "double hamburger", "double viande burger","double viande hachée",
+                   "doubel cheese", "double  cheese burger")
+
+double_burger_poulet <- c("double chicken", "double chicken burger", "double chicken cheese burger",
+                          "double chiken", "double poulet")
+
+Daurade_Grillée <- c("daurade grillé","daurade grillée")
+
+eclaire <- c("eclair", "éclair","eclaire", "eclaire au chocolat", 
+             "éclair au chocolat noir", "eclair chocolat", "éclair chocolat")
+
+escalope_à_la_crème <- c("escalope à la créme", "escalope a la crème", "escalope à la crème")
+
+escalope_de_poulet_grillé <- c("escalope de poulet grillée","escalope de poulet grillé",
+                               "escalope grillée","escalope de poulet grillé"
+                               )
+
+escalope_panée <- c("plat escalope panée", "escalope panée gratinée au fromage",  "escalope pané garnie",
+                    "escalope pané garnier", "escalope pannée", "escalope panée burger")
+
+fajitas_poulet <- c("fajita poulet", "fajitas chicken")
+
+fondant <- c("fondant", "fondant au chocolat", "fondant simple", "fondant au nutella",
+             "fondant nutella")
+
+gauffre_au_chocolat <- c("gauffre chocolat", "gaufre au chocolat", "gaufre classique",
+                         "gaufre simple","gaufres chocolat")
+
+gauffre_aux_fruits <- c("gaufre au fruit", "gaufre aux fruits", "gaufre fruit", 
+                        "gaufre fruita", "gaufre fruitée", "gaufre fruits")
+
+gauffre_banane <- c("gaufre banane", "gaufre banana", "gaufre banane au choix")
+
+gauffre_banane_nutella <- c("gaufre banantella", "gaufre banatella", "gaufre nutella, banane",
+                            "gaufre nutella bannan", "gaufre chocolat banane")
+
+gauffre_caramel <- c("gaufre caramel", "gaufre caramèl")
+
+gauffre_caramel_au_beurre_salé <- c("gaufre caramel au beurre salé", 
+                                    "gaufre caramel beurre salé")
+
+gauffre_royale <- c("gaufre royal", "gaufre royale", "gaufre royale nutella")
+
+gratin_de_poulet <- c("gratin au poulet", "gratin  poulet", "gratin chicken", 
+                      "gratin de poulet","gratin poulet")
+
+gratin_aux_crevettes <- c("gratin aux crevettes", "gratin crevette", "gratin crevettes", 
+                          "gratin de crevettes")
+
+grec_viande <- c("grec viande hachée", "grec viande hacheé")
+
+hmis <- c("hmis", "hmiss")
+
+homos <- c("hommos","homos", "homous", "houmous")
+
+karisik_kebab <- c("karisik kebab", "karisik kebap")
+
+karisik_meze_tabagi <- c("karisik meze tabagi", "karisik mezze tabagi")
+
+kebab_mix <- c("kebab mixte solo", "kebab mixte")
+
+kebab_poulet <- c("kebab poulet", "kebab poulet solo")
+
+kebab_viande <- c("kebab viande", "kebab viande garnie", "kebab viande solo")
+
+kunafa <- c("kunafa", "kuneffa")
+
+lasagne <- c("lasagne viande", "lasagne à la viande", "lasagne à la viande hachée", 
+             "lasagnes bolognaise","lasagne à la bolognaise", "plat lasagne طبق لزنيا", "pasta lasagne")
+
+lasagne_poulet <- c("lasagnes au poulet", "lasagne au poulet")
+
+gratin_de_lasagne <- c("gratin de lasagne", "gratin de lasagnes")
+
+lasagne_alforno <- c("lasagne al forno", "lasagnes al fornoz")
+
+makloub_chiche_kebab <- c("makloub chich kebab", "makloub chiche kebab")
+
+matloua_viande_hachée <- c("matloua viande hachée", "matloua viande hacheé", "matlouaa viande hachée", 
+                           "matloua kessera viande hachée")
+
+matloua_escalope_marinée <- c("matloua escalope mariné", "matloua escalope marinée")
+
+matloua_foie <- c("matloua foie", "matlouaa foie", "matlouh foie", "matlou3 foie")
+
+
+melfouf_foie_de_poulet <- c("melfouf foie (poulet)", "melfouf foie de  poulet", 
+                            "melfouf foie de poulet")
+
+melfouf_poulet_marinée <- c("melfouf poulet marinée", "melfouf poulet mariné")
+
+melfouf_viande_hachée <- c("melfouf viande", "melfouf viande hachée")
+
+menu_burger <- c("menu burger classique", "menu cheeseburger", "menu classic burger")
+
+merguez <- c("merguez grillée", "merguez grillé")
+
+mezzah_mix <- c("mezzah mixte", "mezzeh mixte")
+
+milkshake_banane <- c("milk-shake banane", "milk shake banane", "milkshake banane", 
+                      "milkshake bannane")
+
+milkshake_banane_nutella <- c("milkshake banane nutella", "milk-shake banane et nutella")
+
+milkshake_chocolat <- c("milk-shake chocolat", "milk shake chocolat", "milkshake au chocolat", 
+                        "milkshake chocolat")
+
+milkshake_bounty <- c("milk-shake bounty", "milkshake bounty")
+
+milkshake_kinder_bueno <- c("milk-shake kinder bueno", "milkshake bueno", "milkshake k. bueno", 
+                           "milkshake kinder", "milkshake kinder bueno")
+
+milkshake_kitkat <- c("milk-shake kitkat", "milkshake kitkat", "milkshake kit kat")
+
+milkshake_nutella <- c("milkshake nutella", "milk-shake nutella")
+
+milkshake_ferrero_rocher <- c("milk-shake ferrero rocher", "milkshake ferrero")
+
+mille_feuilles <- c("mille feuille", "mille feuilles", "mille feuilles nature", 
+                    "milles feuilles vanille")
+
+mojito <- c("mojito classic", "mojito classique", "mojito virgin", "mojitos")
+
+ngaous <- c("n'gaous canette", "n'gaous", "ngaoues")
+
+nuggets <- c("barquette de nuggets","nuggets", "nuggets de poulet")
+
+oignon_rings <- c("barquette oignon rings","oignon rings", "oignons rings")
+
+omlette_aux_fromages <- c("omelette au fromage", "omelette fromage", "omelettes au fromage")
+
+pain_maison_poulet_haché <- c("pain maison poulet hachéé", "pain maison poulet haché")
+
+pain_viande_hachée <- c("pain normal viande hachée", "pain normal au viande hachée")
+
+pancake_au_chocolat <- c("pancake au chocolat", "pancake  chocolat", "pancake chocolat")
+
+panckake_aux_fruits <- c("pancake au fruits", "pancake aux fruits", "pancake aux  fruits", 
+                         "pancake banane fruits", "pancake fruits")
+
+panini_3_fromages <- c("panini 03 fromage", "panini 03 fromages", "panini 3 fromages", 
+                       "panini trois fromages")
+
+panini_4_fromages <- c("panini 4fromages", "panini 04 fromages", "panini 4 fromages")
+
+panini_fromage <- c("panini fromage", "panini frmage", "panini au fromage")
+
+panini_thon_fromage <- c("panini thon au fromage", "panini thon fromage")
+
+petit_pain_viande_hachée <- c("petit pain viande hachée", "petit pain viande . h")
+
+pizza_4_fromages <- c("pizza  4 fromages", "pizza 04 fromages", "pizza 04fromages",
+                      "pizza quatre fromages", "pizza 04 cheeses", "pizza 4 fromages",
+                      "pizza 4 fromage", "pizza quatro fromaggi", "pizza quattro fromaggi")
+
+pizza_3_fromages <- c("pizza 03 fromages", "pizza 3 fromages", "pizza 3 fromage",
+                      "pizza trois fromage", "pizza trois fromages")
+
+pizza_3_viandes <- c("pizza 3 viandes", "pizza 3 viande")
+
+pizza_4_saison <- c("pizza 4 saison", "pizza 4 saisons", "pizza 4 saveurs 4 saisons",
+                    "pizza 04 saisons", "pizza  4 saisons", "pizza quatre saisons",
+                    "4 saison", "4 saisons")
+
+pizza_5_fromages <- c("pizza 5 fromages", "pizza 05 fromages", "pizzas 5 fromages")
+
+pizza_blanche <- c("pizza blanca", "pizza blanche", "pizza blanco", "pizza white")
+
+pizza_boisée_4_fromages <- c("pizza boisée 04 fromages", "pizza 4 fromages boisée",
+                             "pizza boisée 4 fromages", "pizza boisée quatre fromages")
+
+pizza_boisée_crevettes <- c("pizza boisée crevette", "pizza boisée crevettes")
+
+pizza_boisée_viande_hachée <- c("pizza boisée viande hachée", "pizza boisée viande . h",
+                                "pizza boisée viande  + poivron")
+
+pizza_californienne <- c("pizza calefornienne", "pizza californienne")
+
+pizza_campione <- c("pizza campione", "pizza campionne", "pizza campoin")
+
+pizza_champignons <- c("pizza champignons", "pizza champignon")
+
+pizza <- c("pizza classica", "pizza classique", "pizza simple")
+
+pizza_couverte <- c("pizza couverte", "pizza couvert")
+
+pizza_dinde_fumée <- c("pizza dinde fumée", "pizza dinde fumé")
+
+pizza_fermière <- c("pizza fermier","pizza fermiére", "pizza fermière")
+
+pizza_fromagère <- c("pizza fromagère", "pizza fromagerie","pizza fromage")
+
+pizza_fruits_de_mer <- c("pizza fruit de mer", "pizza fruits de mer")
+
+pizza_hotdog <- c("pizza hot-dog", "pizza hot dog")
+
+pizza_fumée <- c("pizza fumato", "pizza fumé", "pizza fumée")
+
+pizza_gallina <- c("pizza gallina", "pizza galina")
+
+pizza_géante <- c("pizza géante", "pizza géante +", "pizza géante ++")
+
+pizza_marguerite <- c("pizza la marguerite", "pizza margarita", "pizza margerita",
+                      "pizza margerita l", "pizza margharita", "pizza margharita", 
+                      "pizza margherita","pizza marguerita", "pizza marguerite", 
+                      "pizza marguerite xl", "pizza margueritte")
+
+pizza_mega <- c("pizza méga", "pizza mega", "pizza géante +", "Pizza géante ++" )
+
+pizza_merguez <- c("pizza merguez", "pizza merguez l")
+
+pizza_mexicaine <- c("pizza mexicaine", "pizza méxicaine", "pizza mexicana",
+                     "pizza mexicana", "pizza méxicano")
+
+pizza_océan <- c("pizza océan", "pizza océane")
+
+pizza_orientale <- c("pizza orientale", "pizza oriantal", "pizza oriental")
+
+pizza_poulet <- c("pizza poulet maison", "pizza poulet", "pizza chicken","pizza la chicken",
+                  "pizza pollo", "pizza poulet haché", "pizza poulet hachée", "pizza poulet kiri")
+
+pizza_pepperoni <- c("pizza pepperoni", "pizza peppéroni")
+
+pizza_saumon <- c("pizza salmon","pizza sauce blanche saumon", "pizza saumon", 
+                  "pizza saumon fumé", "pizza saumon fumée")
+
+pizza_sicilienne <- c("pizza siciliena", "pizza sicilienne")
+
+pizza_spéciale <- c("pizza spéciale", "pizza spécial")
+
+pizza_thon <- c("pizza thon", "pizza thon l", "pizza thona", "pizza tuna")
+
+Pizza_traditionnelle <- c("pizza traditional", "pizza traditionnelle")
+
+pizza_universelle <- c("pizza universel", "pizza universelle")
+
+pizza_vegetarienne <- c("pizza végétale","pizza vegetariana","pizza végétariana",
+                        "pizza vegetarienne", "pizza végétarienne")
+
+plat_chawarma <- c("plat chawarma", "plat chawarma ( poulet )", "plat chawarma صحن شاورما",
+                   "plat chawarma طبق شاورما", "plat chawarma arabi", "plat chawarma arrabica",
+                   "plat chawarma poulet")
+
+plat_chichkebab <- c("plat chich kebab", "plat chich kebab")
+
+plat_poulet <- c("plat chicken", "plat de poulet", "plat poulet")
+
+plat_escalope <- c("plat escalope grillé", "plat escalope grillée")
+
+plat_escalope_panné <- c("plat escalope panée", "plat escalope panné")
+
+plat_foie_de_poulet <- c("plat foie de poulet", "plat kebda poulet")
+
+plat_mexicain <- c("plat mexicain", "plat mexicano")
+
+plat_poulet_farci <- c("plat poulet farcie", "plat poulet farci")
+
+plat_viande_hachée <- c("plat viande haché", "plat viande hachée")
+
+poulet_roti <- c("poulet roti", "poulet routé")
+
+quiche_poulet <- c("quiche poulet", "quiche  poulet")
+
+riz <- c("riz", "ris")
+
+salade_césar <- c("salade césar au poulet", "salade césar poulet")
+
+salade_aubergine <- c("salade d'aubergine", "salade d'aubergines")
+
+salade_de_thon <- c("salade de thon", "salade thon")
+
+sandwich_3_fromages <- c("sandwich 03 fromages", "sandwich 3 fromages",
+                         "sandwich trois fromage", "sandwich trois fromages",
+                         "sandwich big cheese +")
+
+sandwich_chichtaouk <- c("sandwich taouk", "sandwich chich taouk", "shish taouk", 
+                         "shish taouk (poulet)")
+
+sandwich_poulet_tika <- c("sandwich chicken tikka", "sandwich chicken tika")
+
+sandwich_francesco <- c("sandwich francesco", "sandwich francisco")
+
+sandwich_foie <- c("sandwich kebda", "sandwich foie")
+
+sandwich_foie_de_poulet <- c("sandwich kebda poulet", "sandwich foie poulet", 
+                             "sandwich foie de poulet")
+
+sandwich_mexicain <- c("sandwich mexicano", "sandwich mexicain")
+
+sandwich_mix <- c("sandwich mixte", "sandwich mix")
+
+sandwich_poulet <- c("sandwich poulet", "sandwich chicken")
+
+sandwich <- c("sandwich simple", "sandwich simpel")
+
+smoothie_banane <- c("smoothie banane", "smoothie bannane")
+
+smoothie_fruits <- c("smoothie fruit de saison", "smoothie fruits de saison",
+                     "smoothie fruité", "smoothie", "smoothies")
+
+soufflé_3_fromages <- c("soufflé 03 fromages", "soufflé 3 fromages", "soufflé au 3 fromages",
+                        "soufflé trois fromages", "souflet 3 fromages","souflet 3 fromage")
+
+soufflé_au_poulet <- c("soufflé  poulet", "soufflé au poulet", "soufflet poulet", 
+                       "souflet poulet")
+
+soufflé_au_thon <-c("soufflé au thon","soufflé thon", "soufflet thon", "souflet thon") 
+
+soufflé_mix <- c("soufflé mix", "soufflé mixe", "soufflé mixte", "souflet mix de viande")
+
+soupe_de_lentilles <- c("soupe aux lentilles", "soupe de lentilles", 
+                        "soupe de lentilles à la turque")
+
+soupe_de_poisson <- c("soupe de poisson", "soupe de poissons")
+
+spaghetti_bolognaise <- c("spaghetti à la bolognaise", "spaghetti bolognaise", 
+                          "spaghettis bolognaise")
+
+steak <- c("steak", "steaks")
+
+tacos_3_fromages <- c("tacos 03 fromages", "tacos 3 fromages", "tacos 3 fromage", 
+                      "tacos trois fromages", "tacos trois fromage", "tacos le 3 fromages")
+
+tacos_chawarma <- c("tacos charwarma", "tacos chawarma")
+
+tacos_crevettes <- c("tacos crevettes", "tacos crevette")
+
+tacos_2_viandes <- c("tacos 2 viandes","tacos deux viandes",
+                     "tacos l 02 viandes merguez + foie de poulet", 
+                     "Tacos l 02 viandes v.h + poulet")
+
+tacos_foie_de_poulet <- c("tacos foie de poulet", "tacos foie (poulet)","tacos foie poulet")
+
+tacos_fumé <- c("tacos fumé", "tacos fumato")
+
+tacos_gratiné <- c("tacos gratiné", "tacos gratiner")
+
+tacos_italien <- c("tacos italiano", "tacos italien")
+
+tacos_crispy <- c("tacos crispy", "tacos le crispy")
+
+tacos_mix <- c("tacos mixe", "tacos mixte", "tacos mixed", "tacos mix de viande")
+
+tacos_poulet <- c("tacos poulet", "tacos chicken", "tacos poulet دجاج", "tacos poulet nature",
+                  "tacos poulet s", "tacos simple poulet")
+
+tacos_viande <- c("tacos viande", "tacos simple viande", "tacos viande hachée", 
+                  "tacos viande hacée", "tacos vinade")
+
+tagliatelles_3_fromages <- c("tagliatelles 03 fromages", "tagliatelles 3 fromages")
+
+tarte_au_chocolat <- c("tarte au chocolat", "tarte chocolat")
+
+tenders_box <- c("tenders box", "tenders boxe")
+
+eau <- c("eau", "eau 0.5 l", "eau 1 l", "eau 1.5 l", "eau 50cl", "l' eau")
+
+eau_pm <- c("eau p.m", "eau pm")
+
+eau_gm <- c("eau g.m", "eau gm")
+
+eau_gazeuse <- c("eau gazeuse", "eau gazeuse 0.5 l", "eau gazeuse 1litre", "eau gazeuse pm",
+                 "eaux gazeuse 1l" )
+
+eau_minérale <- c("eau inérale 0.5 l", "eau ménérale", "eau minéral", "eau minéral 0,5l",
+                  "eau minéral 0.5l", "eau minéral 1,5l", "eau minérale", "eau minérale -  0.5 l x 12",
+                  "eau minérale - 1,5 l x 6", "eau minérale - 1,5 l x 6 saida", 
+                  "eau minérale - 1,5 l x 6", "eau minérale  - 1,5 l x 6 lalla khedidja",
+                  "eau minérale 1.5l", "eau minérale  1.5l plate",
+                  "eau minérale  saida- 1,5 l x 6", "eau minérale 0,5l", "eau minérale 0.5 l", 
+                  "eau minérale 0.5 l", "eau minérale 1 l", "eau minérale 1,5l", "eau minérale 1,5l",                           
+                  "eau minérale 1.5 l",  "eau minérale 1.5l", "eau minérale 1l",                         
+                  "eau minérale 33 cl",  "eau minérale 33cl",  "eau minérale 50 cl",                       
+                  "eau minérale 50cl", "eau minérale gazéifiée", "eau minérale gazeuse",                          
+                  "eau minérale gb", "eau minérale ifri - 1,5 l x 6",                       
+                  'eau minérale lalla khedidja - 1,5 l x 6',  'eau minérale pb',    
+                  "eau minérale plate 1l", "eau minérale saida - 1,5 l x 6",
+                  "eau minérale0.5l", "eaux minérale")
+
+boisson <- c("petite boisson", "grande boisson", "boissons petit modèle", "boisson d'autre marque import",
+             "boisson fraiche fruits", "boissons 1l", "boissons 33cl")
+
+boisson_énergétique <- c("boisson énergétique", "boisson énergisante - 25 cl", 
+                         "boisson énergisante red bull - 25 cl")
+
+boisson_gazeuse <- c("boisson gazeuse plastique", "boissons gazeuses 1 l", "boissons gazeuses 33 cl")
+
+boisson_gazeuse_pm <- c("boisson gazeuse p.m", "boisson gazeuse pm", "boissons gazeuse pm" ,
+                        "boissons gazeuses pm" )
+
+jus <- c("bouteille 1l jus", "canette jus" , "gazouz/ jus 1 l", "gazouz/ jus small", "ifruit jus",
+         "jus", "jus 0.35 l", "jus 1 l", "jus 1 litre", "jus 1l", "jus 20 cl", "jus 25 ml", "jus 30 cl",
+         "jus 33 cl", "jus 33 ml", "jus 33cl", "jus au choix", "jus bouteille", "jus canette", 
+         "jus civital", "jus grand modèl", "jus grande", "jus ifri", "jus ifruit 33cl", "jus ifruits",
+         "jus mini", "jus petite", "jus petite boite", "jus petite bouteille",
+         "les jus", "mini jus", "petit jus", "petite bouteille jus", "vitajus")
+
+jus_coktail <- c("jus cocktail", "jus cocktail t'china - 33 cl", "jus cocktails")
+
+```
+
+
+## Work the cases from the file
+
+### burger poulet
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "burger poulet" = burger_poulet))
+```
+
+### bubble waffle banane
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "bubble waffle banane" = bubble_waffle_banane))
+```
+
+### burger dz
+
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "burger algérien" = burger_dz))
+```
+
+### burger mexicain
+
+couldn't find "cheese burger mexicain"
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "burger méxicain" = burger_mexicain))
+```
+
+### burger mix
+
+we can add : big burger mixte
+
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "burger mix" = burger_mix))
+```
+
+### burger porto bello
+
+
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "burger portobello" = burger_portobello))
+```
+
+### burger poulet mariné
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "burger poulet mariné" = burger_poulet_mariné))
+```
+
+### burger
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "burger" = burger))
+```
+
+### burger 100 g
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "burger 100g" = burger_100g))
+```
+
+### calzone mixte
+
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "calzone mixte" = calzone_mix))
+```
+
+### campionne
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "campionne" = campionne))
+```
+
+### chakhchokha
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "chakhchokha" = chakhchokha))
+```
+
+### chawarma
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "chawarma" = chawarma))
+```
+
+### chawata dz
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "chawata dz" = chawata_dz))
+```
+
+### cheese cake raffaello
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "cheesecake raffaello" = cheesecake_raffaello))
+```
+
+### chiche kebab
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "chiche kebab" = chiche_kebab))
+```
+
+### bourek 3 fromages
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "bourek 3 fromages" = bourek_3_fromagues))
+```
+
+### chicken tika
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "chicken tika" = chicken_tika))
+```
+
+### bourek crevettes
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "bourek crevettes" = bourek_crevettes))
+```
+
+### bourek fruits de mer
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "bourek fruits de me" = bourek_fruits_de_mer))
+```
+
+### frites 
+
+deleted : box frites (it was only available with a +)
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "frites" = frites))
+```
+### frites fromagère
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "frites fromagère" = frites_fromagère))
+```
+### brik tunisienne
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "nrik tunisienne" = brik_tunisienne))
+```
+
+### brochette de viande
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "brochette de viande" = brochette_de_viande))
+```
+
+### brochette escalope
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "brochette escalope" = brochette_escalope))
+```
+
+### brownie
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "brownie" = brownie))
+```
+
+### bubble caramel
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "bubble caramel" = bubble_caramel))
+```
+
+### bubble fruits
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "bubble fruits" = bubble_fruits))
+```
+
+### blue burger
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "blue burger" = blue_burger))
+```
+
+### blue burger triple
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "blue burger triple" = blue_burger_triple))
+```
+
+### petite boisson
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "petite boisson" = petite_boisson))
+```
+
+### grande boisson
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "grande boisson" = grande_boisson))
+```
+
+### boisson gazeuse_gm 
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "boisson gazeuse gm" = boisson_gazeuse_gm))
+```
+
+### bourek viande
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "bourek viande" = bourek_viande))
+```
+
+### jus de fruits
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "jus de fruits" = jus_de_fruits))
+```
+
+### complet poulet
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "complet poulet" = complet_poulet))
+```
+
+### crêpe nutella
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "crêpe nutella" = crepe_nutella))
+```
+
+### crêpe fruits
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "crêpe fruits" = crepe_fruits))
+```
+
+### crêpe banane 
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "crêpe banane" = crepe_banane))
+```
+
+### crêpe nutella banane
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "crêpe nutella banane" = crepe_banane_nutella))
+```
+
+### croque monsieur
+
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "croque monsieur" = croque_monsieur))
+```
+
+### cuisse de poulet mariné
+
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "cuisse de poulet mariné" = Cuisse_de_poulet_marinée))
+```
+
+### donuts fruits
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "donuts fruits" = donuts_fruits))
+```
+
+### double burger
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "double burger" = double_burger))
+```
+
+
+### double burger poulet
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "double burger poulet" = double_burger_poulet))
+```
+
+### daurade grillé
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "daurade grillé" = Daurade_Grillée))
+```
+
+### éclaire
+
+didn't find : "eclaire chocolat", "éclaire chocolat"
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "éclaire" = eclaire))
+```
+
+### escalpe à la crême 
+
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "escalpe à la crême" = escalope_à_la_crème))
+```
+
+### escalope de poulet grillé
+
+didn't find : "escalope de poulet grillées"
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "escalpe de poulet grillé" = escalope_de_poulet_grillé))
+```
+### escalope panée
+
+added : plat escalope panée, escalope panée burger
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "escalpe panée" = escalope_panée))
+```
+## fajitas poulet 
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "fajitas poulet" = fajitas_poulet))
+```
+
+###  fondant
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "fondant" = fondant))
+```
+
+### gauffre au chocolat
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "gauffre au chocolat" = gauffre_au_chocolat))
+```
+
+### gauffre aux fruits
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "gauffre aux fruits" = gauffre_aux_fruits))
+```
+
+### gauffre banane
+
+added : gaufre banane au choix
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "gauffre banane" = gauffre_banane))
+```
+
+### gauffre banane nutella
+
+added : gaufre banane au choix
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "gauffre banane nutella" = gauffre_banane_nutella))
+```
+
+### gauffre caramel
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "gauffre caramel" = gauffre_caramel))
+```
+
+### gauffre caramel au beurre salé
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "gauffre caramel au beurre salé" = gauffre_caramel_au_beurre_salé))
+```
+
+### gauffre royal 
+
+added : gaufre royale nutella
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "gauffre royal" = gauffre_royale))
+```
+
+### gratin de poulet
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "gratin de poulet" = gratin_de_poulet))
+```
+
+### gratin aux crevettes
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "gratin aux crevettes" = gratin_aux_crevettes))
+```
+
+### grec viande
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "grec viande" = grec_viande))
+```
+
+### hmis
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "hmis" = hmis))
+```
+
+### homos
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "homos" = homos))
+```
+
+### karisik kebab
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "karisik kebab" = karisik_kebab))
+```
+
+### karisik meze tabagi
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "karisik meze tabagi" = karisik_meze_tabagi))
+```
+
+### kebab mix
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "kebab mix" = kebab_mix))
+```
+
+### kebab poulet
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "kebab poulet" = kebab_poulet))
+```
+
+### kebab viande
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "kebab viande" = kebab_viande))
+```
+
+### kunafa 
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "kunafa" = kunafa))
+```
+### lasagne
+
+do we have to sepearate lasagne viande à poulet ? if yes then we need to create a category for lasagne poulet and other cases. I modified a lot this part you can check
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "lasagne" = lasagne))
+```
+
+### lasagne poulet 
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "lasagne poulet" = lasagne_poulet))
+```
+
+### gratin de lasagne  
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "gratin de lasagne" = gratin_de_lasagne))
+```
+
+### lasagne al forno 
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "lasagne al forno" = lasagne_alforno))
+```
+
+### makloub chiche kebab
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "makloub chiche kebab" = makloub_chiche_kebab))
+```
+
+### matloua viande hachée
+
+added : matlouaa viande hachée, matloua kessera viande hachée
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "matloua viande hachée" = matloua_viande_hachée))
+```
+### matloua escalope marinée
+
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "matloua escalope marinée" = matloua_escalope_marinée))
+```
+
+### matloua foie
+
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "matloua foie" = matloua_foie))
+```
+
+### melfouf foie de poulet
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "melfouf foie de poulet" = melfouf_foie_de_poulet))
+```
+
+### melfouf poulet marinée
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "melfouf poulet marinée" = melfouf_poulet_marinée))
+```
+
+### melfouf viande hachée
+
+
+```{r}
+data <- data %>%
+    mutate(food_name2 = fct_collapse(food_name2, "melfouf viande hachée" = melfouf_viande_hachée))
+```
+
+### all the others
+
+didn't find : nugget
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "menu burger" = menu_burger)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "merguez" = merguez)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "mezzah mix" = mezzah_mix)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "milkshake banane" = milkshake_banane)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "milkshake banane nutella" = milkshake_banane_nutella)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "milkshake chocolat" = milkshake_chocolat)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "milkshake bounty" = milkshake_bounty)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "milkshake kinder bueno" = milkshake_kinder_bueno)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "milkshake kitkat" = milkshake_kitkat)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "milkshake nutella" = milkshake_nutella)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "milkshake ferrero rocher" = milkshake_ferrero_rocher)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "mille feuilles" = mille_feuilles)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "mojito" = mojito)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "ngaous" = ngaous)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "nuggets" = nuggets))
+```
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "oignon rigns" = oignon_rings)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "omelettes aux fromages" = omlette_aux_fromages)) %>%
+  #mutate(food_name2 = fct_collapse(food_name2, "pain maison poulet haché" = pain_maison_poulet_haché)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pain viande haché" = pain_viande_hachée)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pancake au chocolat" = pancake_au_chocolat)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pancake aux fruits" = panckake_aux_fruits)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "panini 3 fromages" = panini_3_fromages)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "panini 4 fromages" = panini_4_fromages)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "panini fromage" = panini_fromage)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "panini thon fromage" = panini_thon_fromage)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "petit pain viande hachée" = petit_pain_viande_hachée)) 
+  
+```
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza 4 fromages" = pizza_4_fromages)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza 3 fromages" = pizza_3_fromages)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza 3 viandes" = pizza_3_viandes)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza 4 saisons" = pizza_4_saison)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza 5 fromages" = pizza_5_fromages)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza blanche" = pizza_blanche)) %>%
+  #mutate(food_name2 = fct_collapse(food_name2, "pizza blanche viande hachée" = pizza_blanche_viande_hachée)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza boisée 4 fromages" = pizza_boisée_4_fromages)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza boisée crevettes" = pizza_boisée_crevettes)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza boisée viandes hachée" = pizza_boisée_viande_hachée)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza californienne" = pizza_californienne)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza campione" = pizza_campione)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza champignons" = pizza_champignons)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza" = pizza)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza couverte" = pizza_couverte)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza dinde fumée" = pizza_dinde_fumée)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza fermière" = pizza_fermière)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza fromagère" = pizza_fromagère)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza fruits de mer" = pizza_fruits_de_mer)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza hotdog" = pizza_hotdog)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza fumée" = pizza_fumée)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza gallina" = pizza_gallina)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza géante" = pizza_géante)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza marguerite" = pizza_marguerite)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza mega" = pizza_mega)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza merguez" = pizza_merguez)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "petit méxicaine" = pizza_mexicaine)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza océan" = pizza_océan)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza orientale" = pizza_orientale)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza poulet" = pizza_poulet)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza pepperoni" = pizza_pepperoni)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza saumon" = pizza_saumon)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza sicilienne" = pizza_sicilienne)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza spéciale" = pizza_spéciale)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza thon" = pizza_thon)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza traditionnelle" = Pizza_traditionnelle)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza universelle" = pizza_universelle)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pizza vegetarienne" = pizza_vegetarienne))
+```
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "plat chawarma" = plat_chawarma)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "plat chichkebab" = plat_chichkebab)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "plat poulet" = plat_poulet)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "plat escalope" = plat_escalope)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "plat escalope panné" = plat_escalope_panné)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "plat foie de poulet" = plat_foie_de_poulet)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "plat méxicain" = plat_mexicain)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "plat poulet farci" = plat_poulet_farci)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "plat viande hachée" = plat_viande_hachée)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "poulet roti" = poulet_roti)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "quiche poulet" = quiche_poulet)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "riz" = riz)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "salade césar" = salade_césar)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "salade aubergine" = salade_aubergine)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "salade de thon" = salade_de_thon)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "sandwich 3 fromages" = sandwich_3_fromages)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "sandwich chichtaouk" = sandwich_chichtaouk)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "sandwich poulet tika" = sandwich_poulet_tika)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "sandwich francesco" = sandwich_francesco)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "sandwich foie" = sandwich_foie)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "sandwich foie de poulet" = sandwich_foie_de_poulet)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "sandwich méxicain" = sandwich_mexicain)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "sandwich mix" = sandwich_mix)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "sandwich poulet" = sandwich_poulet)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "sandwich" = sandwich)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "smoothie banane" = smoothie_banane)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "smoothie fruits" = smoothie_fruits)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "soufflé 3 fromages" = soufflé_3_fromages)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "soufflé au poulet" = soufflé_au_poulet)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "soufflé au thon" = soufflé_au_thon)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "soufflé mix" = soufflé_mix)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "soupe de lentilles" = soupe_de_lentilles)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "soupe de poisson" = soupe_de_poisson)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "spaghetti bolognaise" = spaghetti_bolognaise)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "steak" = steak)) 
+```
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos 3 fromages" = tacos_3_fromages)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos chawarma" = tacos_chawarma)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos crevettes" = tacos_crevettes)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos 2 viandes" = tacos_2_viandes)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos_foie_de_poulet" = tacos_foie_de_poulet)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos fumé" = tacos_fumé)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos gratiné" = tacos_gratiné)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos italien" = tacos_italien)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos crispy" = tacos_crispy)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos mix" = tacos_mix)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos poulet" = tacos_poulet)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tacos viande" = tacos_viande)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tagliatelles 3 fromages" = tagliatelles_3_fromages)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tarte au chocolat" = tarte_au_chocolat)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "tenders box" = tenders_box))
+```
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "eau" = eau)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "eau pm" = eau_pm)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "eau gm" = eau_gm)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "eau gazeuse" = eau_gazeuse)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "eau minérale" = eau_minérale)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "boisson" = boisson)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "boisson énergétique" = boisson_énergétique)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "boisson gazeuse " = boisson_gazeuse)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "boisson gazeuse pm" = boisson_gazeuse_pm)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "jus" = jus)) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "jus cocktail" = jus_coktail)) 
+```
+
+## Coca Cola, Pepsi and Fanta
+### Helper function 
+
+```{r}
+mydetect <- function(char){
+  data %>%
+    filter(str_detect(food_name2,char)) %>%
+    count(food_name2) %>%
+    pull(food_name2) 
+}
+```
+
+```{r}
+data <- data %>%
+  mutate(food_name2 = fct_collapse(food_name2, "coca cola" = mydetect("coca"))) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "fanta" = mydetect("fanta"))) %>%
+  mutate(food_name2 = fct_collapse(food_name2, "pepsi" = mydetect("pepsi")))
+```
+

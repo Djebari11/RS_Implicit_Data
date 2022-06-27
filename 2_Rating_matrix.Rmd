@@ -1,0 +1,74 @@
+---
+title: "Rating Matrix from implicit data"
+author: "Djebari"
+date: '2022-06-27'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#This transformation was found in ..
+
+## Loading the ibraries
+
+```{r}
+library(tidyverse)
+library(recommenderlab)
+library(lubridate)
+```
+
+## First we calculate the rating then we convert it into a rating matrix (use the data after cleaning)
+
+### Ratings
+```{r}
+data_rating_frequency <- data4 %>%
+  group_by(user_id) %>%
+  mutate(tu = n()) %>%
+  ungroup() %>%
+  group_by(user_id, food_name2) %>%
+  mutate(tui= n()) %>%
+  ungroup() %>%
+  mutate(ap = log((tui/tu)+1)) %>%
+  group_by(food_name2) %>%
+  mutate(m = max(ap)) %>%
+  ungroup() %>%
+  mutate(rp = ap/m,
+         rating = ceiling(5 * rp)) %>%
+  select(food_name2, user_id, rating, request_date)
+
+```
+
+### Rating matrix
+
+```{r}
+rating_matrix <- data_rating_frequency %>%
+  group_by(user_id) %>%
+  mutate(n =n())  %>%
+  ungroup() %>%
+  group_by(user_id, food_name2) %>% 
+  mutate(rank = rank(request_date)) %>% 
+  filter(rank == n()) %>% 
+  select(user_id,food_name2,rating) %>% 
+  ungroup() %>% 
+  pivot_wider(names_from = food_name2, values_from = rating) %>%
+  select(-user_id) %>%
+  as.matrix()
+
+ratingmat0 <- rating_matrix
+ratingmat0[is.na(ratingmat0)] <- 0
+sparse_ratings <- as(ratingmat0, "sparseMatrix")
+rm(ratingmat0)
+gc()
+
+
+real_ratings <- new("realRatingMatrix", data = sparse_ratings)
+real_ratings
+
+
+image(real_ratings)
+```
+
+
+

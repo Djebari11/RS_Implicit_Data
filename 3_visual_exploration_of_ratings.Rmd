@@ -1,0 +1,161 @@
+---
+title: "Graphs"
+author: "Djebari"
+date: '2022-06-27'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Libraries
+
+```{r}
+library(tidyverse)
+library(recommenderlab)
+library(lubridate)
+library(scales)
+```
+
+```{r}
+data_rating_frequency %>% 
+  count(rating) %>% 
+  mutate(rating = as.factor(rating)) %>% 
+  ggplot(aes(y = n, x = "",fill = rating))+
+  geom_bar(width = 1, stat = "identity")+
+  coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round(n/sum(n),2)*100, "%")),
+            position = position_stack(vjust = 0.5))+
+  labs(x="", y= "", fill= "note")+
+  theme_minimal()+
+  theme(axis.text.x = element_blank())
+```
+
+```{r}
+data_rating_frequency %>% 
+  ggplot(aes(rating)) +
+  geom_bar(fill = "firebrick") +
+  scale_y_continuous(labels = number_format(big.mark = ",")) +
+  labs(x = "Note", y = "Fréquence absolue") +
+  theme_classic()+
+  theme(axis.text.y = element_blank())
+```
+
+#average rating of each item
+```{r}
+data_rating_frequency %>% 
+  group_by(food_name2) %>%
+  mutate(avg_rating = mean(rating)) %>%
+  ungroup() %>%
+  ggplot(aes(avg_rating)) +
+  geom_histogram(fill = "firebrick") +
+  scale_y_continuous(labels = number_format(big.mark = ",")) +
+  labs(x = "Note moyenne", y = "Fréquence absolue") +
+  theme_classic()+
+  theme(axis.text.y = element_blank())
+```
+
+#average rating of each item (items <= 3.5)
+```{r}
+data_rating_frequency %>% 
+  group_by(food_name2) %>%
+  mutate(avg_rating = mean(rating)) %>%
+  ungroup() %>%
+  filter(avg_rating <= 3.5) %>%
+  ggplot(aes(avg_rating)) +
+  geom_histogram(fill = "firebrick") +
+  scale_y_continuous(labels = number_format(big.mark = ",")) +
+  labs(x = "Note moyenne", y = "Fréquence absolue") +
+  theme_classic()+
+  theme(axis.text.y = element_blank())
+```
+
+#average rating of each item (items > 3.5)
+```{r}
+data_rating_frequency %>% 
+  group_by(food_name2) %>%
+  mutate(avg_rating = mean(rating)) %>%
+  ungroup() %>%
+  filter(avg_rating >3.5) %>%
+  ggplot(aes(avg_rating)) +
+  geom_histogram(fill = "firebrick") +
+  scale_y_continuous(labels = number_format(big.mark = ",")) +
+  labs(x = "Note moyenne ", y = "Féquence absolue") +
+  theme_classic()+
+  theme(axis.text.y = element_blank())
+```
+
+#average rating for each user
+```{r}
+data_rating_frequency %>% 
+  group_by(user_id) %>%
+  mutate(avg_rating = mean(rating)) %>%
+  ungroup() %>%
+  ggplot(aes(avg_rating)) +
+  geom_histogram(fill = "firebrick") +
+  scale_y_continuous(labels = number_format(big.mark = ",")) +
+  labs(x = "Note moyenne", y = "Fréquence absolue") +
+  theme_classic()+
+  theme(axis.text.y = element_blank())
+```
+
+#ratings of 5 best users for all their items
+```{r}
+a <- data_rating_frequency %>%
+  count(user_id) %>%
+  arrange(-n) %>%
+  slice(1:5) %>%
+  pull(user_id)
+
+
+data_rating_frequency %>%
+  filter(user_id %in% a) %>%
+  # group_by(user_id, food_name2) %>%
+  # mutate(n = n()) %>%
+  # ungroup() %>%
+  # arrange(-n) %>%
+  # slice(1:10) %>%
+  ggplot(aes(x = food_name2, y = user_id, fill = factor(rating))) +
+  geom_tile() +
+   labs(x="Plats", y="Identifiant de l'utilisateur", fill = "Notes")+
+  scale_fill_discrete() +
+  theme_classic()+
+  theme(#axis.ticks.x = element_blank(),
+        axis.text.x = element_blank())
+```
+
+#purchase frequency by days and hours
+```{r}
+data %>%
+  mutate(jour_de_semaine = weekdays(as.POSIXct(request_date)), 
+         heure = hour(as.POSIXct(request_date))) %>% 
+  count(jour_de_semaine, heure) %>% 
+  ggplot(aes(x = heure, y = ordered(jour_de_semaine, c("dimanche", "lundi", "mardi","mercredi", "jeudi", "vendredi", "samedi")), fill = n)) +
+  labs(y="jour")+
+  geom_tile() +
+  scale_fill_viridis_c() +
+  scale_x_continuous(breaks = 0:23) + 
+  theme_classic()
+```
+
+#DZ map for purchase fequency
+```{r}
+library(sp)
+library(sf)
+
+
+dz_mapw <- raster::getData("GADM", country ="DZ", level = "1")
+dz_map <- raster::getData("GADM", country ="DZ", level = "0")
+
+
+ggplot() + 
+  geom_sf(data = dz_mapw %>% st_as_sf(), fill = 'white') + 
+  coord_sf(ylim = c(35,38), xlim = c(-2.5, 8.5)) +
+  geom_point(data = data2,
+             aes(x = delivery_address_loc_lng, y = delivery_address_loc_lat),
+             col = "red") +
+  theme_bw()
+```
+
