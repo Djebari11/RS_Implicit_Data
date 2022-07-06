@@ -19,6 +19,8 @@ library(lubridate)
 library(scales)
 ```
 
+
+#rating frequency
 ```{r}
 data_rating_frequency %>% 
   count(rating) %>% 
@@ -31,16 +33,6 @@ data_rating_frequency %>%
   labs(x="", y= "", fill= "note")+
   theme_minimal()+
   theme(axis.text.x = element_blank())
-```
-
-```{r}
-data_rating_frequency %>% 
-  ggplot(aes(rating)) +
-  geom_bar(fill = "firebrick") +
-  scale_y_continuous(labels = number_format(big.mark = ",")) +
-  labs(x = "Note", y = "Fréquence absolue") +
-  theme_classic()+
-  theme(axis.text.y = element_blank())
 ```
 
 #average rating of each item
@@ -138,24 +130,5 @@ data %>%
   scale_fill_viridis_c() +
   scale_x_continuous(breaks = 0:23) + 
   theme_classic()
-```
-
-#DZ map for purchase fequency
-```{r}
-library(sp)
-library(sf)
-
-
-dz_mapw <- raster::getData("GADM", country ="DZ", level = "1")
-dz_map <- raster::getData("GADM", country ="DZ", level = "0")
-
-
-ggplot() + 
-  geom_sf(data = dz_mapw %>% st_as_sf(), fill = 'white') + 
-  coord_sf(ylim = c(35,38), xlim = c(-2.5, 8.5)) +
-  geom_point(data = data2,
-             aes(x = delivery_address_loc_lng, y = delivery_address_loc_lat),
-             col = "red") +
-  theme_bw()
 ```
 
