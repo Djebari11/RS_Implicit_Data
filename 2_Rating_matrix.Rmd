@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#This transformation was found in ..
+#This transformation was found in "A hybrid online-product recommendation system: Combining implicit rating-based collaborative filtering and sequential pattern analysis" (Choi, Yoo, Kim, Suh, 2012)
 
 ## Loading the ibraries
 
